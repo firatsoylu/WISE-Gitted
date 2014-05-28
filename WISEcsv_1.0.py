@@ -21,7 +21,7 @@ def main(argv):
             outputfile = arg
 
     testtype = 'NA'
-
+    print inputfile
     if inputfile.lower().find('pre') != -1: #fileinfo keeps track of pre/post and the unit info
         testtype = 'pre'
     elif inputfile.lower().find('post') != -1:
@@ -49,6 +49,8 @@ def main(argv):
                 rowTable.append(row['id']) #tack on runid and user id to the row first
                 rowTable.append(row['workgroupid'])
                 rowTable.append(row['username'])
+                rowTable.append(row['sgender'])
+                rowTable.append(row['parentprojectid'])
                 for i in range(totalNodes): #fill all of the question columns with zeros
                     rowTable.append(0)
                 position, scoreTable = parseNode(row, rowData, posDict) #get the data and the position in the table the data should be placed
@@ -64,10 +66,12 @@ def main(argv):
                     outputTable[count][position + n] = i
                     n = n + 1
 
-    restructure_table (outputTable, outputfile, testtype)
-    #writefile(outputfile, outputTable)
+    #print outputTable   
+    #restructure_table (outputTable, outputfile, testtype)
+    writefile(outputfile, outputTable)
     
 def restructure_table (outputTable, outputfile, testtype):
+    print outputTable
     table_length = len(outputTable)
     table_width = len(outputTable[1])
     nodes_list = outputTable[0][3:table_width]
@@ -85,15 +89,18 @@ def restructure_table (outputTable, outputfile, testtype):
     for i in range(1,table_length):
         runID = outputTable[i][0]       #runID
         userID = outputTable[i][1]      #userID
-
         username = outputTable[i][2]    #username
-        responses = outputTable[i][3:table_width]
+        sgender = outputTable[i][3]
+        parentprojectid = outputTable[i][4]
+
+        responses = outputTable[i][5:table_width]
+
 
         for k in range(no_of_responses):
             new_line = [runID, userID, username, nodes_list[k], node_types_list[k], responses[k], testtype]
             new_o.append(new_line)
 
-    new_o.insert(0,['runID','userID','username','node', 'type', 'response','testtype'])          
+    new_o.insert(0,['runID','userID','username','node', 'type', 'response','prepost','gender','parentprojectid'])          
     writefile(outputfile, new_o)
 
 def writefile(outFile, outputTable):
@@ -104,7 +111,7 @@ def writefile(outFile, outputTable):
     print 'SUCCESS!! file written to ' + outFile
 
 def createHeader(table, sortedList):
-    table.extend(['runid','userID', 'username'])
+    table.extend(['runid','userID', 'username','gender','parentprojectid'])
     for i in sortedList:
         if i[1][1] == 1:
             if i[0][-1] == 'l':  #only one response but 'al' question type
@@ -242,8 +249,6 @@ def checkScoreOR(rowData, position):
     for a in rowData['nodeStates']:
         if a['timestamp'] == max(numList):
             node.append(a['response'][0])
-    # for item in rowData['nodeStates']:
-    #     node.append(item['response'][0])
     return node
 
 def checkScoreBS(rowData, position):
