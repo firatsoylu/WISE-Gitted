@@ -101,15 +101,16 @@ def restructure_table (outputTable, outputfile, testtype):
 
         for nodeinstance in nodes_list:           
             split_nodeinstance = nodeinstance.split("-")
+            #print(split_nodeinstance)
 
             nodenum = split_nodeinstance[0]
 
-            stepnum = str(realignNodes(parentprojectid,nodenum))
+            stepnum = realignNodes(parentprojectid,nodenum)
 
-            if len(split_nodeinstance) == 3: #if there are multiple questions in a step
-                stepnum = stepnum + '_' + split_nodeinstance[1]
-            else:
-                stepnum = stepnum + '_0'
+            # if len(split_nodeinstance) == 3: #if there are multiple questions in a step
+            #     stepnum = stepnum + '_' + split_nodeinstance[1]
+            # else:
+            #     stepnum = stepnum + '_0'
 
             stepslist.append(stepnum)
 
@@ -131,7 +132,8 @@ def realignNodes(parentprojectid,nodenum):
 
     for matchers in v_list:
         if nodenum in matchers:
-            return matchers[0]
+            return str(matchers[0])
+
 
 def writefile(outFile, outputTable):
     out = open(outFile, 'w')

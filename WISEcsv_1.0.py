@@ -21,14 +21,12 @@ def main(argv):
             outputfile = arg
 
     testtype = 'NA'
-    print inputfile
     if inputfile.lower().find('pre') != -1: #fileinfo keeps track of pre/post and the unit info
         testtype = 'pre'
     elif inputfile.lower().find('post') != -1:
         testtype = 'post'
     else:
         testtype.append('notfound')
-
     csv.field_size_limit(sys.maxsize)
     datafile = open(inputfile, "rU")   # open SQL csv file
     inData = csv.DictReader(datafile)
@@ -39,6 +37,7 @@ def main(argv):
     outputTable = createHeader(outputTable, sortedList) #create headers for output table
     totalNodes = max(posDict.values()) + sortedList[-1][1][1] #find total number of questions
     for row in full_data_set:
+      #  print full_data_set
         #Ignoring these question types!
         if row['nodetype'] != 'SVGDrawNode' and row['nodetype'] != 'MatchSequenceNode' and row['nodetype'] != 'TableNode':
             rowData = json.loads(row['data'])
@@ -47,10 +46,9 @@ def main(argv):
             if match == False:
                 rowTable = []
                 rowTable.append(row['id']) #tack on runid and user id to the row first
-                rowTable.append(row['workgroupid'])
+                rowTable.append(row['workgroupid'] + row['sgender'] + row['parentprojectid'])
                 rowTable.append(row['username'])
-                rowTable.append(row['sgender'])
-                rowTable.append(row['parentprojectid'])
+                
                 for i in range(totalNodes): #fill all of the question columns with zeros
                     rowTable.append(0)
                 position, scoreTable = parseNode(row, rowData, posDict) #get the data and the position in the table the data should be placed
@@ -111,7 +109,8 @@ def writefile(outFile, outputTable):
     print 'SUCCESS!! file written to ' + outFile
 
 def createHeader(table, sortedList):
-    table.extend(['runid','userID', 'username','gender','parentprojectid'])
+    #table.extend(['runid','userID', 'username','gender','parentprojectid'])
+    table.extend(['runid','userID', 'username'])
     for i in sortedList:
         if i[1][1] == 1:
             if i[0][-1] == 'l':  #only one response but 'al' question type
