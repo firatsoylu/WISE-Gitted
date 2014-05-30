@@ -16,7 +16,7 @@ def main(argv):
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
-            outputfile = inputfile.replace(".csv", "Out.csv")
+            outputfile = inputfile.replace(".csv", "_Out.csv")
         elif opt in ("-o", "--ofile"):
             outputfile = arg
 
@@ -75,11 +75,13 @@ def restructure_table (outputTable, outputfile, testtype):
     nodes_list = outputTable[0][3:table_width]
     node_types_list = []
     
+    
     for n in range(len(nodes_list)):
         if nodes_list[n].find('mc') != -1:
             node_types_list.append('mc')
         else:
             node_types_list.append('or')
+
 
     new_o = []
 
@@ -100,23 +102,27 @@ def restructure_table (outputTable, outputfile, testtype):
         stepslist = []
 
         for nodeinstance in nodes_list:           
+            
             split_nodeinstance = nodeinstance.split("-")
-            #print(split_nodeinstance)
 
             nodenum = split_nodeinstance[0]
 
-            stepnum = realignNodes(parentprojectid,nodenum)
+            stepnum = str(realignNodes(parentprojectid,nodenum)) #had to convert this to str because  it returns "None" when that node does not exist in the test
 
-            # if len(split_nodeinstance) == 3: #if there are multiple questions in a step
-            #     stepnum = stepnum + '_' + split_nodeinstance[1]
-            # else:
-            #     stepnum = stepnum + '_0'
+            if stepnum != "None":
+                if len(split_nodeinstance) == 3: #if there are multiple questions in a step
+                    stepnum = stepnum + '_' + split_nodeinstance[1]
+                else:
+                    stepnum = stepnum + '_0'
 
             stepslist.append(stepnum)
-
+    #when working with units with different note numberings for pre and post the whole nodes_list is not used for each test. 
+    #in these situations the stepnum value is "None" and  these nodes should not be included in the output file.
+        
         for k in range(len(nodes_list)):
-            new_line = [runID, userID, username, nodes_list[k], stepslist[k],node_types_list[k], responses[k], testtype, sgender, parentprojectid, teacher, school]
-            new_o.append(new_line)
+            if stepslist[k] != "None":
+                new_line = [runID, userID, username, nodes_list[k], stepslist[k],node_types_list[k], responses[k], testtype, sgender, parentprojectid, teacher, school]
+                new_o.append(new_line)
 
     new_o.insert(0,['runID','userID','username','node', 'step', 'type', 'response','prepost','gender','parentprojectid','teacher','school'])          
     writefile(outputfile, new_o)
