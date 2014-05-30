@@ -20,7 +20,6 @@ def main(argv):
         elif opt in ("-o", "--ofile"):
             outputfile = arg
 
-    testtype = 'NA'
 
     csv.field_size_limit(sys.maxsize)
     datafile = open(inputfile, "rU")   # open SQL csv file
@@ -31,15 +30,17 @@ def main(argv):
     outputTable = []
     outputTable = createHeader(outputTable, sortedList) #create headers for output table
     totalNodes = max(posDict.values()) + sortedList[-1][1][1] #find total number of questions
+    
+    testtype = 'NA'
     for row in full_data_set:
-        if testtype == 'NA':
-            runname = row['name'].lower()            
-            if runname.find('pre') != -1: #fileinfo keeps track of pre/post and the unit info
-                testtype = 'pre'
-            elif runname.find('post') != -1:
-                testtype = 'post'
-            else:
-                testtype.append('notfound')
+        runname = row['name'].lower()            
+        if runname.find('pre') != -1: #fileinfo keeps track of pre/post and the unit info
+            testtype = 'pre'
+        elif runname.find('post') != -1:
+            print "hello"
+            testtype = 'post'
+        else:
+            testtype.append('notfound')
 
         #Ignoring these question types!
         if row['nodetype'] != 'SVGDrawNode' and row['nodetype'] != 'MatchSequenceNode' and row['nodetype'] != 'TableNode':
@@ -50,7 +51,12 @@ def main(argv):
                 rowTable = []
                 rowTable.append(row['id']) #tack on runid and user id to the row first
                 rowTable.append(row['workgroupid'])
-                rowTable.append(row['username'] + '_' + row['sgender'] + '_' + row['parentprojectid'] + '_' + row['name'])
+                rowTable.append(row['username'])
+                rowTable.append(row['sgender'])
+                rowTable.append(row['parentprojectid'])
+                rowTable.append(row['name'])
+                rowTable.append(testtype)
+
                 for i in range(totalNodes): #fill all of the question columns with zeros
                     rowTable.append(0)
                 position, scoreTable = parseNode(row, rowData, posDict) #get the data and the position in the table the data should be placed
@@ -66,10 +72,10 @@ def main(argv):
                     outputTable[count][position + n] = i
                     n = n + 1
 
-    restructure_table (outputTable, outputfile, testtype)
+    restructure_table (outputTable, outputfile)
     #writefile(outputfile, outputTable)
     
-def restructure_table (outputTable, outputfile, testtype):
+def restructure_table (outputTable, outputfile):
     table_length = len(outputTable)
     table_width = len(outputTable[1])
     nodes_list = outputTable[0][3:table_width]
@@ -88,16 +94,14 @@ def restructure_table (outputTable, outputfile, testtype):
     for i in range(1,table_length):
         runID = outputTable[i][0]       #runID
         userID = outputTable[i][1]      #userID
-        tempstr = outputTable[i][2].split("_") #when split this produces username, gender, parentprojectid
-        username = tempstr[0]
-        sgender = tempstr[1]
-        parentprojectid = tempstr[2]
-        runname = tempstr[3]
+        username = outputTable[i][2]
+        sgender = outputTable[i][3]
+        parentprojectid = outputTable[i][4]
+        runname = outputTable[i][5]
+        testtype = outputTable[i][6]
         teacher = runname.split(" - ")[1]
         school = runname.split(" - ")[2]
-
-        username = outputTable[i][2]    #username
-        responses = outputTable[i][3:table_width]
+        responses = outputTable[i][7:table_width]
 
         stepslist = []
 
@@ -228,7 +232,7 @@ def setPosDict(nodeDict):
 def parseNode(row, rowData, posDict):
     for node in posDict:
         if row['nodeid'] == node:
-            position = posDict[node] + 3
+            position = posDict[node] + 7 #incremented based on the number of fields before data
             if node[-2:] == 'al':
                 scoreList = checkScoreALOR(rowData, position)
             elif node[-2:] == 'mc':
