@@ -40,7 +40,8 @@ def main(argv):
             print "hello"
             testtype = 'post'
         else:
-            testtype.append('notfound')
+            print("testtype not found")
+            testtype = 'notfound'
 
         #Ignoring these question types!
         if row['nodetype'] != 'SVGDrawNode' and row['nodetype'] != 'MatchSequenceNode' and row['nodetype'] != 'TableNode':
