@@ -43,7 +43,7 @@ def main(argv):
             testtype = 'notfound'
 
         #Ignoring these question types!
-        if row['nodetype'] != 'SVGDrawNode' and row['nodetype'] != 'MatchSequenceNode' and row['nodetype'] != 'TableNode':
+        if row['nodetype'] != 'SVGDrawNode' and row['nodetype'] != 'MatchSequenceNode' and row['nodetype'] != 'TableNode' and len(row['sgender']) == 1:
             rowData = json.loads(row['data'])
             #check for existing row, if False, then no dups, if it is a dup, record the location in the table
             match, count = isDups(row['id'], row['workgroupid'], outputTable)
@@ -72,13 +72,13 @@ def main(argv):
                     outputTable[count][position + n] = i
                     n = n + 1
 
-    restructure_table (outputTable, outputfile)
-    #writefile(outputfile, outputTable)
+    #restructure_table (outputTable, outputfile)
+    writefile(outputfile, outputTable)
     
 def restructure_table (outputTable, outputfile):
     table_length = len(outputTable)
     table_width = len(outputTable[1])
-    nodes_list = outputTable[0][3:table_width]
+    nodes_list = outputTable[0][7:table_width]
     node_types_list = []
     
     
@@ -94,14 +94,14 @@ def restructure_table (outputTable, outputfile):
     for i in range(1,table_length):
         runID = outputTable[i][0]       #runID
         userID = outputTable[i][1]      #userID
-        username = outputTable[i][2]
-        sgender = outputTable[i][3]
-        parentprojectid = outputTable[i][4]
-        runname = outputTable[i][5]
-        testtype = outputTable[i][6]
-        teacher = runname.split(" - ")[1]
+        username = outputTable[i][2]    #username
+        sgender = outputTable[i][3]     #gender
+        parentprojectid = outputTable[i][4] #parentprojectid
+        runname = outputTable[i][5]     #runname (with teachera and school seperated by " - ")
+        testtype = outputTable[i][6]    #testtype
+        teacher = runname.split(" - ")[1]   #spit runname and you get runname, teacher, school
         school = runname.split(" - ")[2]
-        responses = outputTable[i][7:table_width]
+        responses = outputTable[i][7:table_width]   #responses start at coloumn 7 and to go the end
 
         stepslist = []
 
@@ -137,6 +137,8 @@ def realignNodes(parentprojectid,nodenum):
         v_list = [['1.2','node_0.al'],['1.3','node_17.al'],['2.1','node_10.al'],['2.2','node_11.al'],['2.3','node_12.al'],['2.4','node_13.al'],['2.5','node_14.al'],['2.6','node_15.al'],['3.1','node_18.al'],['3.2','node_19.al'],['3.3','node_20.al'],['3.4','node_21.al']]
     elif parentprojectid in ["558","501"]: #v2 for evolution
         v_list = [['1.2','node_1.al'],['1.3','node_2.al'],['2.1','node_3.al'],['2.2','node_4.al'],['2.3','node_5.al'],['2.4','node_6.al'],['2.5','node_7.al'],['2.6','node_8.al'],['3.1','node_9.al'],['3.2','node_10.al'],['3.3','node_11.al'],['3.4','node_12.al']]
+    #elif parentprojectid in ["130"]:
+    #elif parentprojectid in ["136"]:
     else:
         print ("parentprojectid not found: " + parentprojectid)
 
@@ -192,7 +194,7 @@ def findNodes(data):
     nodeDict = {}
     for row in data:
         # get rid of question types we won't be analyzing here
-        if row['nodetype'] != 'SVGDrawNode' and row['nodetype'] != 'MatchSequenceNode' and row['nodetype'] != 'TableNode':
+        if row['nodetype'] != 'SVGDrawNode' and row['nodetype'] != 'MatchSequenceNode' and row['nodetype'] != 'TableNode' and len(row['sgender']) == 1:
             match = False
             #since we just want to get an idea about number of questions, we need a dict of all the possible nodes
             for node in nodeDict.keys():
