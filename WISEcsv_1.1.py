@@ -58,7 +58,7 @@ def main(argv):
                 rowTable.append(testtype)
 
                 for i in range(totalNodes): #fill all of the question columns with zeros
-                    rowTable.append(0)
+                    rowTable.append("na")
                 position, scoreTable = parseNode(row, rowData, posDict) #get the data and the position in the table the data should be placed
                 n = 0
                 for i in scoreTable: #replace the null values in the correct spot in the table with the data
@@ -274,7 +274,8 @@ def checkScoreALOR(rowData, position):
                     node.append(item['response']['text'])
                 modifyHeader(qStr, position+n) #modify header to include question type string
             else:
-                node.append(0)
+                node.append("na2")
+                print("here 279 : item: " + str(item))
             n = n + 1
     else:
         qStr='or'
