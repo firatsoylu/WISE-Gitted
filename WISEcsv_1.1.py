@@ -137,10 +137,10 @@ def realignNodes(parentprojectid,nodenum):
         v_list = [['1.2','node_0.al'],['1.3','node_17.al'],['2.1','node_10.al'],['2.2','node_11.al'],['2.3','node_12.al'],['2.4','node_13.al'],['2.5','node_14.al'],['2.6','node_15.al'],['3.1','node_18.al'],['3.2','node_19.al'],['3.3','node_20.al'],['3.4','node_21.al']]
     elif parentprojectid in ["558","501"]: #v2 for evolution
         v_list = [['1.2','node_1.al'],['1.3','node_2.al'],['2.1','node_3.al'],['2.2','node_4.al'],['2.3','node_5.al'],['2.4','node_6.al'],['2.5','node_7.al'],['2.6','node_8.al'],['3.1','node_9.al'],['3.2','node_10.al'],['3.3','node_11.al'],['3.4','node_12.al']]
-    elif parentprojectid in ["130"]:
+    elif parentprojectid in ["130"]: #pnom 2014 post
         v_list = [['1.1', 'node_0.al'],['1.2','node_1.al'],['1.3','node_2.al'],['2.1','node_4_al'],['2.2','node_5.mc'],['2.4','node_7.al'],['3.1','node_3.al'],['3.2','node_8.al'],['3.3','node_10.al'],['3.4','node_11.al']]
-    elif parentprojectid in ["136"]:
-        v_list = [['1.1', 'node_0.al'],['1.2','node_1.al'],['1.3','node_2.al'],['2.1','node_4_al'],['2.2','node_5.mc'],['2.4','node_7.al'],['3.1','node_3.al'],['3.2','node_8.al'],['3.3','node_10.al'],['3.4','node_11.al']]
+    elif parentprojectid in ["136"]: #pnom 2014 pre
+        v_list = [['1.1', 'node_0.al'],['1.2','node_1.al'],['1.3','node_2.al'],['2.7','node_14_or'],['3.1','node_3.al'],['3.2','node_4.al'],['3.3','node_5.al'],['3.4','node_6.al']]
     else:
         print ("parentprojectid not found: " + parentprojectid)
 
