@@ -37,7 +37,6 @@ def main(argv):
         if runname.find('pre') != -1: #fileinfo keeps track of pre/post and the unit info
             testtype = 'pre'
         elif runname.find('post') != -1:
-            print "hello"
             testtype = 'post'
         else:
             print("testtype not found")
@@ -154,7 +153,7 @@ def writefile(outFile, outputTable):
     print 'SUCCESS!! file written to ' + outFile
 
 def createHeader(table, sortedList):
-    table.extend(['runid','userID', 'username'])
+    table.extend(['runid','userID', 'username','gender','parentprojectid','name','testtype'])
     for i in sortedList:
         if i[1][1] == 1:
             if i[0][-1] == 'l':  #only one response but 'al' question type
