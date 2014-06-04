@@ -32,14 +32,30 @@ def main(argv):
     totalNodes = max(posDict.values()) + sortedList[-1][1][1] #find total number of questions
     
     testtype = 'NA'
+    global testName
     for row in full_data_set:
-        runname = row['name'].lower()            
+        runname = row['name'].lower()
+        if runname.find('pnom') != -1: #Find out which unit it is
+            #print 'pnom'
+            testName = 'pnom'
+        elif runname.find('evolution') != -1:
+            #print 'evo'
+            testName = 'evo'
+        elif runname.find('population') != -1:
+            #print 'pop'
+            testName = 'pop'
+        elif runname.find('electricity') != -1:
+            #print 'elect'
+            testName = 'elec'
+        else:
+            testName = 'other'
+
         if runname.find('pre') != -1: #fileinfo keeps track of pre/post and the unit info
             testtype = 'pre'
         elif runname.find('post') != -1:
             testtype = 'post'
         else:
-            print("testtype not found")
+            #print("testtype not found")
             testtype = 'notfound'
 
         #Ignoring these question types!
@@ -250,13 +266,14 @@ def parseNode(row, rowData, posDict):
     return position, scoreList
 
 def checkScoreALOR(rowData, position):
+    curNodeId = rowData['nodeId']
+    qStr='mc' #set question type string -- assume mc and chance later if needed
     node = []
     n=0
     if 'assessments' in rowData['nodeStates'][0]:
         for item in rowData['nodeStates'][0]['assessments']:
             if item['response'] != None:
                 if 'autoScoreResult' in item['response']:  #multiple choice
-                    qStr='mc' #set question type string
                     if 'choiceScore' in item['response']['autoScoreResult']:
                         if item['response']['autoScoreResult']['choiceScore'] == 1:
                             node.append(1)
@@ -269,19 +286,33 @@ def checkScoreALOR(rowData, position):
                             node.append(0)
                     else:
                         node.append(0)
+                elif testName == 'pnom' and (curNodeId == 'node_2.al' or curNodeId == 'node_6.al' or curNodeId == 'node_11.al'): #these two are mc but didn't have autograde on
+                    node.append(autoGrade(curNodeId, item))
                 else: #open response
                     qStr='or' #set question type string
                     node.append(item['response']['text'])
                 modifyHeader(qStr, position+n) #modify header to include question type string
             else:
                 node.append("na2")
-                print("here 279 : item: " + str(item))
+                #print("here 279 : item: " + str(item))
             n = n + 1
     else:
         qStr='or'
         modifyHeader(qStr, position+n) #modify header to include question type string
         checkScoreOR(rowData, position)
     return node
+
+def autoGrade(curNodeId, item):
+    if curNodeId == 'node_2.al':  # model question
+        if item['response']['text'] == 'Either the small-scale version of the house or the floor plans could be a better model depending on what model will be used for.':
+            return 1
+        else:
+            return 0
+    else:  #rain in june question (node 6 and node 11 are the same question)
+        if item['response']['text'] == 'It rains.':
+            return 1
+        else:
+            return 0
 
 def modifyHeader(qStr, pos):
     curStr = outputTable[0][pos]
