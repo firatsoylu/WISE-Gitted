@@ -16,7 +16,7 @@ Open a connection
 
 In the next screen you should see an area to type a Query.  Copy and paste the following:
 
-'''
+```
 SELECT n.id, n.nodeid, n.nodetype, ui.workgroupid, wandu.username, r.id, r.name,wandu.sgender, prj.parentprojectid, s.data  FROM
 sail_database.runs r, 
 sail_database.projects prj,
@@ -46,7 +46,7 @@ s.data like '%nodeStates":[{%' and
 s.userinfo_id=ui.id and 
 prj.id=r.project_fk and
 ui.workgroupid=wandu.workgroupid;
-'''
+```
 
 Now, before we continue, there are some things you’ll want to edit to be sure you’re getting what you actually want. In particular, you’ll want to change the text that says “r.name like '%PNoM%Test%’” to look for the name of the run you actually want. Notice, the % is a wildcard which allows anything in it’s place, so the query above actually returns any run with the strings “PNoM” and “Test” somewhere in the middle. If I remove the last %, then it will look for runs that end in with “Test”, if I remove the first % it will look for runs that begin with “PNoM”, etc. Note you can also add to or change this section to look for a particular run (replace “r.name like '%PNoM%Test%'” with “n.runid like 294”, to look for runs with a particular name after a specific time (as we do in the query above), etc. If you need help tweaking this query let Firat or I know.
 
@@ -59,9 +59,9 @@ To export, on the main menu bar, go to Query -> Export Results.  Make sure you h
 
 If you haven’t already, copy the WISEcsv_1.1.py (downloaded from git) file and place it in the same directory as your new SQL results csv file. Open your terminal and navigate to that directory. Type the following command replacing “myData.csv” with the name of the csv you want to parse.
 
-'''
+```
 python WISEcsv.py -i myData.csv
-'''
+```
 
 After the script runs, you should see “file written to myDataOut.csv”. That’s your parsed file! Get analyzing!
 
