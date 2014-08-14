@@ -72,6 +72,7 @@ def main(argv):
                 rowTable.append(row['parentprojectid'])
                 rowTable.append(row['name'])
                 rowTable.append(testtype)
+                rowTable.append(row['period'])
 
                 for i in range(totalNodes): #fill all of the question columns with zeros
                     rowTable.append("na")
@@ -94,7 +95,7 @@ def main(argv):
 def restructure_table (outputTable, outputfile):
     table_length = len(outputTable)
     table_width = len(outputTable[1])
-    nodes_list = outputTable[0][7:table_width]
+    nodes_list = outputTable[0][8:table_width]
     node_types_list = []
     
     
@@ -106,7 +107,6 @@ def restructure_table (outputTable, outputfile):
 
 
     new_o = []
-
     for i in range(1,table_length):
         runID = outputTable[i][0]       #runID
         userID = outputTable[i][1]      #userID
@@ -117,7 +117,8 @@ def restructure_table (outputTable, outputfile):
         testtype = outputTable[i][6]    #testtype
         teacher = runname.split(" - ")[1]   #spit runname and you get runname, teacher, school
         school = runname.split(" - ")[2]
-        responses = outputTable[i][7:table_width]   #responses start at coloumn 7 and to go the end
+        period = outputTable[i][7]
+        responses = outputTable[i][8:table_width]   #responses start at coloumn 8 and to go the end
 
         stepslist = []
 
@@ -141,10 +142,10 @@ def restructure_table (outputTable, outputfile):
         
         for k in range(len(nodes_list)):
             if stepslist[k] != "None":
-                new_line = [runID, userID, username, nodes_list[k], stepslist[k],node_types_list[k], responses[k], testtype, sgender, parentprojectid, teacher, school]
+                new_line = [runID, userID, username, nodes_list[k], stepslist[k],node_types_list[k], responses[k], testtype, sgender, parentprojectid, teacher, school, period]
                 new_o.append(new_line)
 
-    new_o.insert(0,['runID','userID','username','node', 'step', 'type', 'response','prepost','gender','parentprojectid','teacher','school'])          
+    new_o.insert(0,['runID','userID','username','node', 'step', 'type', 'response','prepost','gender','parentprojectid','teacher','school', 'period'])          
     writefile(outputfile, new_o)
 
 def realignNodes(parentprojectid,nodenum):
@@ -173,7 +174,7 @@ def writefile(outFile, outputTable):
     print 'SUCCESS!! file written to ' + outFile
 
 def createHeader(table, sortedList):
-    table.extend(['runid','userID', 'username','gender','parentprojectid','name','testtype'])
+    table.extend(['runid','userID', 'username','gender','parentprojectid','name','testtype', 'period'])
     for i in sortedList:
         if i[1][1] == 1:
             if i[0][-1] == 'l':  #only one response but 'al' question type
@@ -252,7 +253,7 @@ def setPosDict(nodeDict):
 def parseNode(row, rowData, posDict):
     for node in posDict:
         if row['nodeid'] == node:
-            position = posDict[node] + 7 #incremented based on the number of fields before data
+            position = posDict[node] + 8 #incremented based on the number of fields before data
             if node[-2:] == 'al':
                 scoreList = checkScoreALOR(rowData, position)
             elif node[-2:] == 'mc':
